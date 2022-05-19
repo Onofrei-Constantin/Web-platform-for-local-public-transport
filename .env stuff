@@ -1,0 +1,10 @@
+REACT_APP_TPL_URI=mongodb+srv://licentaOC:licentaOC@cluster0.pee1t.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+JWT_SECRET=651e30f10c1d3fc4711568f748ce800f97198511bf0255b6bcd865e59879dafc367b8f
+JWT_EXPIRE=1day
+MAIL_HOST="smtp.mailtrap.io"
+MAIL_PORT="2525"
+MAIL_USER="160ab5b3d64190"
+MAIL_PASS="4519e34e5c8d2b"
+
+
+REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyCHO7tbynK_FqRSKpPMryOkVGk8v1ejto8
