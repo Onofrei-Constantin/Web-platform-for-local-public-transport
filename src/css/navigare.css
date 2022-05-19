@@ -1,0 +1,143 @@
+.navigare-nav
+{
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+    background-color: white;
+    color: black;
+    z-index: 1;
+}
+
+.navigare-links
+{
+    display: flex;
+    width: 75%;
+    justify-content: flex-start;
+    list-style: none;
+    margin-left: 15px;
+}
+
+.navigare-link-css{
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    transition: all 0.5s ease;
+    margin-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.navigare-link-css-drop {
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    transition: all 0.5s ease;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.navigare-link-css-drop:hover {
+    cursor: pointer;
+    color: green;
+}
+
+.navigare-link-css:hover {
+    cursor: pointer;
+    color: green;
+}
+
+
+.navigare-logo{
+    width: 200px;
+    margin-left: 10px;
+}
+
+.navigare-buton{
+    display: none;
+}
+
+.navigare-drop{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    background-color: white;
+    border-style: solid;
+    border-color: grey;
+    border-radius: 5px;
+    transition: all 0.5s ease-out;
+    width: 200px;
+    top: 70px;
+}
+
+
+
+
+
+@media screen and (max-width: 780px) {
+    
+    .navigare-logo{
+        display: flex;
+        position: absolute;
+        left: 30px;
+        width: 125px;
+    }
+
+    .navigare-links {
+        display: none;
+    }
+
+    .navigare-links-mobile{
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        left: 0;
+        list-style: none;
+        background-color: white;
+        transition: all 0.5s ease-out;
+        width: 100%;
+        top: 100px;
+    }
+    
+    .navigare-link-css
+    {
+        color: black;
+        text-align: center;    
+        width: 100%;
+        text-decoration: none;
+        transition: all 0.5s ease;
+    }
+
+    .navigare-link-css:hover {
+        cursor: pointer;
+        color: green;
+    }
+
+    .navigare-link-drop {
+        display: flex;
+    }
+
+    .navigare-buton{
+        display: block;
+        position: absolute;
+        font-size: 30px;
+        outline: none;
+        border: none;
+        background-color: white;
+        right: 30px;
+        cursor: pointer;
+    }
+
+    .navigare-drop {
+        position: relative;
+        width: 100%;
+        top: 10px;
+    }
+    
+}
+
+
+

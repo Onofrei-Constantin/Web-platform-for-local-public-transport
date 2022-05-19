@@ -1,0 +1,68 @@
+
+.cautare-rute-hr {
+    border-bottom: 0.5px solid #000000;
+    border-top: 0.5px solid #000000;
+}
+
+.cautare-rute-component{
+    background-image: url('../assets/cautareRute/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cautare-rute-container{
+    height: 250px;
+    padding-top: 20px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cautare-rute-h1{
+    color: white;
+}
+
+
+.cutare-rute-input{
+    margin-top: 15px;
+    width: 200px;
+}
+
+.cutare-rute-buton{
+    margin-top: 15px;
+    width: 200px;
+}
+
+.cutare-rute-buton:disabled {
+    background-color: white;
+}
+
+.cautare-rute-drop1{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    color: black;
+    background-color: white;
+    top: 250px;
+}
+
+.cautare-rute-drop2{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    color: black;
+    background-color: white;
+    top: 285px;
+}
+.cautare-rute-drop-content{
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+}
+
+.cautare-rute-drop-content:hover{
+    background-color: grey;
+    cursor: pointer;
+}
