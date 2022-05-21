@@ -21,7 +21,7 @@ const Anunt = ()  => {
 
     useEffect(()=>{
       const getAnunt = () =>{
-        axios.get('http://localhost:3001/anunturi/'+idAnunt)
+        axios.get('http://localhost:3001/public/anunturiGaseste/'+idAnunt)
               .then( response=>{
                   setAnunt(response.data);
               })

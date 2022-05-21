@@ -9,7 +9,7 @@ import Header from "./componente/header";
 import Footer from './componente/footer';
 import Rute from './pagini/rute';
 import Tarife from './pagini/tarife';
-import LoginAdministrare from './administrare/loginAdministrare';
+import Login from './administrare/login';
 import InregistrareAdministare from "./administrare/inregistrareAdministrare";
 import PrivateRoute from "./administrare/privateRoute";
 import AdmPage from "./administrare/admPage";
@@ -43,7 +43,7 @@ function App() {
           <Route path="/tarife" element = {<Tarife/>}/>
           <Route path="/anunturi" element = {<Anunturi/>}/>
           <Route path="/anunturi/anunt" element = {<Anunt/>}/>
-          <Route path="/login-administrare" element = {<LoginAdministrare/>}/>
+          <Route path="/login" element = {<Login/>}/>
         </Routes>
         <Footer/>
     </BrowserRouter>

@@ -14,7 +14,7 @@ const Anunturi = ()  => {
     const navigate = useNavigate();
 
     const getToateNoutatile = ()=>{
-         axios.get('http://localhost:3001/anunturi/')
+         axios.get('http://localhost:3001/public/anunturi/')
             .then(response=>{
                 if(response.data.length>0)
                 {

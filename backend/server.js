@@ -20,17 +20,10 @@ connection.once('open', ()=>{
     console.log("MongoDB database connection established successgully");
 })
 
-
-const anunturiRouter = require('./routes/anunturi');
-const bileteRouter = require('./routes/bilete');
-const ruteRouter = require('./routes/rute');
-const userRouter = require('./routes/user');
-
-app.use('/anunturi', anunturiRouter);
-app.use('/bilete', bileteRouter);
-app.use('/rute', ruteRouter);
-app.use('/user', userRouter);
+app.use('/public', require('./routes/public'));
 app.use('/auth', require('./routes/auth'));
+app.use('/private', require('./routes/private'));
+
 
 app.use(errorHandler);
 

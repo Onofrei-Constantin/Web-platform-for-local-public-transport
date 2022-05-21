@@ -17,8 +17,14 @@ const Home = ()  => {
     const[bilete,getBilete] = useState(null);
     const navigate = useNavigate();
 
+    const logoutHandler = ()=>{
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("authRefreshToken");
+      navigate('/login');
+    }
+
     const getToateNoutatile = ()=>{
-         axios.get('http://localhost:3001/anunturi/home')
+         axios.get('http://localhost:3001/public/anunturi')
             .then(response=>{
                 if(response.data.length>0)
                 {
@@ -34,7 +40,7 @@ const Home = ()  => {
     }
 
     const getToateBiletele = ()=>{
-         axios.get('http://localhost:3001/bilete/')
+         axios.get('http://localhost:3001/public/bilete/')
             .then( response=>{
                 if(response.data.length>0)
                 {
@@ -105,6 +111,7 @@ const Home = ()  => {
           <button className="home-bilete-buton" onClick={()=>navigate('/tarife')}>Vezi mai multe informatii despre tarife</button>
         </div>
       </div>
+      <button className="" onClick={logoutHandler}>Logout</button>
     </ContainerPagina>
   );
 }

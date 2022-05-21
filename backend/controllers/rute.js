@@ -1,14 +1,13 @@
 const router = require('express').Router();
-const { default: userEvent } = require('@testing-library/user-event');
 let Ruta = require('../models/rute.model');
 
-router.route('/').get((req,res) =>{
+exports.rute =(req,res) =>{
     Ruta.find()
         .then(rute => res.json(rute))
         .catch(err=> res.status(400).json('Error: '+ err));
-});
+};
 
-router.route('/add').post((req,res)=>{
+exports.ruteAdauga =(req,res)=>{
     const denumire = req.body.denumire;
     const numeStatii = req.body.numeStatii;
 
@@ -18,21 +17,21 @@ router.route('/add').post((req,res)=>{
     newRuta.save()
         .then(()=>res.json('Ruta adaugata!'))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/:id').get((req,res)=>{
+exports.ruteGaseste =(req,res)=>{
     Ruta.findById(req.params.id)
+        .then(anunturi=>res.json(anunturi))
+        .catch(err => res.status(400).json('Error: '+err));
+};
+
+exports.ruteSterge = (req,res)=>{
+    Ruta.findByIdAndDelete(req.params.id)
         .then(()=>res.json('Ruta stearsa!'))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/:id').delete((req,res)=>{
-    Ruta.findByIdAndDelete(req.params.id)
-        .then(rute=>res.json(rute))
-        .catch(err => res.status(400).json('Error: '+err));
-});
-
-router.route('/update/:id').post((req,res)=>{
+exports.rutaActualizeaza =(req,res)=>{
     Ruta.findById(req.params.id)
         .then(rute=>{
             rute.denumire = req.body.denumire;
@@ -43,6 +42,4 @@ router.route('/update/:id').post((req,res)=>{
                 .catch(err => res.status(400).json('Error: '+err));
         })
         .catch(err => res.status(400).json('Error: '+err));
-});
-
-module.exports = router;
+};

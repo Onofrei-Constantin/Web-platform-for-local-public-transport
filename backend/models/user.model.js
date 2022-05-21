@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require("crypto");
 
 const Schema = mongoose.Schema;
 
@@ -11,7 +12,7 @@ const userSchema = new Schema({
     prenume : {type: String, required:[true,"Introdu prenume"], minlength:2,trim:true},
     telefon : {type: Number, required:[true,"Introdu un numar telefon"], length:11},
     adresa : {type: String, required:[true,"Introdu o adresa"]},
-    pozitie: {type: Number, required:true},
+    pozitie: {type: Boolean, required:true},
 },{
     timestamps:true,    
 });
@@ -32,20 +33,6 @@ userSchema.pre("save",async function(next){
 userSchema.methods.matchParole = async function(parola)
 {
     return await bcrypt.compare(parola,this.parola);
-}
-
-userSchema.methods.matchParole = async function(parola)
-{
-    return await bcrypt.compare(parola,this.parola);
-}
-
-userSchema.methods.matchPozitie = function()
-{
-    return this.pozitie===1;
-}
-
-userSchema.methods.getSignedToken = function(){
-    return jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn:process.env.JWT_EXPIRE})
 }
 
 const User = mongoose.model('User', userSchema);

@@ -2,6 +2,7 @@ import ContainerPagina from "../componente/containerPagina";
 import React, { useState, useEffect } from "react";
 import {useNavigate } from 'react-router-dom';
 import axios from "axios";
+import jwt_decode from 'jwt-decode';
 
 const InregistrareAdministare = ()  => {
     let navigate = useNavigate();
@@ -14,16 +15,54 @@ const InregistrareAdministare = ()  => {
     const[adresa,setAdresa]= useState("");
     const[error,setError]=useState("");
 
-  useEffect(() => {
-    if(!localStorage.getItem("authToken"))
-    {
-      navigate('/login-administrare')
+
+const refreshToken = async ()=>{
+    try {
+      const res = await axios.post("http://localhost:3001/auth/refresh",{token : localStorage.getItem("authRefreshToken")})
+      localStorage.setItem("authToken", res.data.accessToken)
+      localStorage.setItem("authRefreshToken", res.data.refreshToken)
+      return res.data;
+    } catch (error) {
+      console.log(error)
     }
-    }, [navigate]);
+  }
+
+
+
+  const axiosJWT = axios.create();
+
+  axiosJWT.interceptors.request.use(
+    async (config) =>{
+      let currentDate = new Date();
+      const decodedToken = jwt_decode(localStorage.getItem("authToken"))
+      
+      if(decodedToken.exp * 1000 < currentDate.getTime())
+      {
+        const data = await refreshToken();
+        config.headers["Authorization"] = "Bearer " + data.accessToken;
+      }
+      console.log(config)
+      return config;
+    },(error)=>{
+      return Promise.reject(error);
+    }
+
+  );
+
+  console.log(jwt_decode(localStorage.getItem("authToken")))
+
+
+    useEffect(() => {
+    if(!localStorage.getItem("authToken")||error||!localStorage.getItem("authRefreshToken"))
+    {
+      navigate('/')
+    }
+    }, [navigate,error]);
 
     const logoutHandler = ()=>{
       localStorage.removeItem("authToken");
-      navigate('/login-administrare');
+      localStorage.removeItem("authRefreshToken");
+      navigate('/login');
     }
 
 
@@ -31,10 +70,11 @@ const InregistrareAdministare = ()  => {
         e.preventDefault();
 
         const config = {
-            header:{
-                "Content-Type": "application/json",
-            }
-        }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
 
         if(parola!==confirmaparola)
         {
@@ -47,7 +87,7 @@ const InregistrareAdministare = ()  => {
         }
 
         try {
-            await axios.post("http://localhost:3001/auth/registerAdministrare",{email,parola,nume,prenume,telefon,adresa},config);
+            await axiosJWT.post("http://localhost:3001/auth/registerAdmin",{email,parola,nume,prenume,telefon,adresa},config);
         } catch (error) {
             setError(error.response.data.error);
             setTimeout(()=>{

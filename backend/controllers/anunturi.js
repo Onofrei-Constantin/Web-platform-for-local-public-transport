@@ -2,21 +2,20 @@ const router = require('express').Router();
 const { default: userEvent } = require('@testing-library/user-event');
 let Anunt = require('../models/anunturi.model');
 
-router.route('/').get((req,res) =>{
-
+exports.anunturi = (req,res) =>{
     Anunt.find({"activ":"true"})
+        .then(anunturi => res.status(200).json(anunturi))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
+
+exports.anunturiHome = (req,res) =>{
+
+    Anunt.find({"activ":"true"}).sort({"createdAt":"-1"}).limit(3)
         .then(anunturi => res.json(anunturi))
         .catch(err=> res.status(400).json('Error: '+ err));
-});
+};
 
-router.route('/home').get((req,res) =>{
-
-    Anunt.find({"activ":"true"}).sort({"updatedAt":"-1"}).limit(3)
-        .then(anunturi => res.json(anunturi))
-        .catch(err=> res.status(400).json('Error: '+ err));
-});
-
-router.route('/add').post((req,res)=>{
+exports.anunturiAdauga = (req,res)=>{
     const titlu = req.body.titlu;
     const tip = req.body.tip;
     const text = req.body.text;
@@ -28,21 +27,21 @@ router.route('/add').post((req,res)=>{
     newAnunt.save()
         .then(()=>res.json('Anunt adaugat!'))
         .catch(err => res.status(400).json('Error: '+ err));
-});
+};
 
-router.route('/:id').get((req,res)=>{
+exports.anunturiGaseste =(req,res)=>{
     Anunt.findById(req.params.id)
         .then(anunturi=>res.json(anunturi))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/:id').delete((req,res)=>{
+exports.anunturiSterge = (req,res)=>{
     Anunt.findByIdAndDelete(req.params.id)
         .then(()=>res.json('Anunt sters!'))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/update/:id').post((req,res)=>{
+exports.anunturiActualizeaza = (req,res)=>{
     Anunt.findById(req.params.id)
         .then(anunturi=>{
             anunturi.titlu = req.body.titlu;
@@ -56,6 +55,4 @@ router.route('/update/:id').post((req,res)=>{
                 .catch(err => res.status(400).json('Error: '+err));
         })
         .catch(err => res.status(400).json('Error: '+err));
-});
-
-module.exports = router;
+};

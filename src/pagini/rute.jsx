@@ -3,7 +3,7 @@ import ContainerPagina from "../componente/containerPagina";
 import {useLocation } from 'react-router-dom';
 import '../css/rute.css';
 import axios from "axios";
-import {dataRute} from '../data/dataRute'
+//import {dataRute} from '../data/dataRute'
 import {
   GoogleMap,
   useJsApiLoader,
@@ -26,11 +26,13 @@ const Rute = () =>  {
     const[plecareS,setPlecareS] = useState('');
     const[destinatieS,setDesitnatieS] = useState('');
     const[centru,setCentru] = useState(null);
+    const[dataRute,getDataRute] = useState(null);
     const {state} = useLocation();
 
 
     useEffect(()=>{
         getToateRutele();
+        getToateStatii();
         setCentru({lat:47.659606368157, lng:26.280503142761646})
     },[]);
 
@@ -142,12 +144,23 @@ const Rute = () =>  {
     },[plecare,intermediare,destinatie])
 
     const getToateRutele = ()=>{
-         axios.get('http://localhost:3001/rute/')
+         axios.get('http://localhost:3001/public/rute/')
             .then( response=>{
                 if(response.data.length>0)
                 {
                     getDenumire(response.data.map(el => el.denumire));
                     getStatii(response.data.map(el => el.numeStatii)); 
+                }
+            })
+            .catch(err => console.error('Error: '+ err));
+    }
+
+    const getToateStatii = ()=>{
+         axios.get('http://localhost:3001/public/statii/')
+            .then( response=>{
+                if(response.data.length>0)
+                {
+                    getDataRute(response.data.map(el=>el.dataRute));
                 }
             })
             .catch(err => console.error('Error: '+ err));
@@ -212,7 +225,6 @@ const Rute = () =>  {
 
         const numarRuta = props;
         statii[numarRuta].forEach((elS) => {
-
             dataRute.forEach(elD=>{
                 if(elS===elD.label)
                 {

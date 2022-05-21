@@ -4,7 +4,7 @@ import axios from "axios";
 import ContainerPagina from "../componente/containerPagina";
 
 
-const LoginAdministrare = () => {
+const Login = () => {
     let navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [parola, setPassword] = useState("");
@@ -12,7 +12,7 @@ const LoginAdministrare = () => {
 
   useEffect(() => {
     if (localStorage.getItem("authToken")) {
-        navigate('/administrare');
+        navigate('/');
      }
   }, [navigate]);
 
@@ -27,13 +27,15 @@ const LoginAdministrare = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3001/auth/loginAdministrator",
+        "http://localhost:3001/auth/login",
         { email, parola },
         config
       );
 
-      localStorage.setItem("authToken", data.token);
-      navigate('/administrare');
+      localStorage.setItem("authToken", data.accessToken);
+      localStorage.setItem("authRefreshToken", data.refreshToken)
+
+      navigate('/');
     } catch (error) {
       setError(error.response.data.error);
       setTimeout(() => {
@@ -83,4 +85,4 @@ const LoginAdministrare = () => {
   );
 };
 
-export default LoginAdministrare;
+export default Login;

@@ -2,13 +2,13 @@ const router = require('express').Router();
 const { default: userEvent } = require('@testing-library/user-event');
 let Bilet = require('../models/bilete.model');
 
-router.route('/').get((req,res) =>{
+exports.bilete =(req,res) =>{
     Bilet.find().sort({"tip":"-1"})
         .then(bilete => res.json(bilete))
         .catch(err=> res.status(400).json('Error: '+ err));
-});
+};
 
-router.route('/add').post((req,res)=>{
+exports.bileteAdauga =(req,res)=>{
     const tip = req.body.tip;
     const numeBilet = req.body.numeBilet;
     const pret = Number(req.body.pret);
@@ -19,21 +19,21 @@ router.route('/add').post((req,res)=>{
     newBilet.save()
         .then(()=>res.json('Bilet adaugat!'))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/:id').get((req,res)=>{
+exports.bileteGaseste =(req,res)=>{
     Bilet.findById(req.params.id)
+        .then(anunturi=>res.json(anunturi))
+        .catch(err => res.status(400).json('Error: '+err));
+};
+
+exports.bileteSterge = (req,res)=>{
+    Bilet.findByIdAndDelete(req.params.id)
         .then(()=>res.json('Bilet sters!'))
         .catch(err => res.status(400).json('Error: '+err));
-});
+};
 
-router.route('/:id').delete((req,res)=>{
-    Bilet.findByIdAndDelete(req.params.id)
-        .then(bilete=>res.json(bilete))
-        .catch(err => res.status(400).json('Error: '+err));
-});
-
-router.route('/update/:id').post((req,res)=>{
+exports.bileteActualizeaza =(req,res)=>{
     Bilet.findById(req.params.id)
         .then(bilete=>{
             bilete.tip = req.body.tip;
@@ -46,6 +46,4 @@ router.route('/update/:id').post((req,res)=>{
                 .catch(err => res.status(400).json('Error: '+err));
         })
         .catch(err => res.status(400).json('Error: '+err));
-});
-
-module.exports = router;
+};
