@@ -1,46 +1,14 @@
-import { useEffect,useState } from "react";
 import {useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
-import axios from "axios";
-import React from "react";
+import React, {useEffect,useState} from "react";
 import ContainerPagina from "../componente/containerPagina";
+import { axiosJWT } from '../componente/axiosJWT';
 
 
 const AdmPage = ()  => {
   let navigate = useNavigate();
   const [error, setError] = useState(false);
   const [news, setNews] = useState(null);
-  
-  const refreshToken = async ()=>{
-    try {
-      const res = await axios.post("http://localhost:3001/auth/refresh",{token : localStorage.getItem("authRefreshToken")})
-      localStorage.setItem("authToken", res.data.accessToken)
-      localStorage.setItem("authRefreshToken", res.data.refreshToken)
-      return res.data;
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const axiosJWT = axios.create();
-
-  axiosJWT.interceptors.request.use(
-    async (config) =>{
-      let currentDate = new Date();
-      const decodedToken = jwt_decode(localStorage.getItem("authToken"))
-      
-      if(decodedToken.exp * 1000 < currentDate.getTime())
-      {
-        const data = await refreshToken();
-        config.headers["Authorization"] = "Bearer " + data.accessToken;
-      }
-
-      return config;
-    },(error)=>{
-      return Promise.reject(error);
-    }
-
-  );
+  const [vanzari, setVanzari] = useState(null);
 
   useEffect(() => {
     if(error||!localStorage.getItem("authToken")||!localStorage.getItem("authRefreshToken"))
@@ -56,7 +24,7 @@ const AdmPage = ()  => {
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       };
 
@@ -73,17 +41,34 @@ const AdmPage = ()  => {
       }
     };
 
+    const fetchVanazari = async () => {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      };
+
+      try {
+        await axiosJWT.get('http://localhost:3001/private/vanzari',config)
+        .then(response=>{
+                if(response.data.length>0)
+                {
+                  setVanzari(response.data);
+                }
+            })
+      } catch (error) {
+        setError(true);
+      }
+    };
+
+
     fetchAnunturiPrivate();
-  }, [axiosJWT]);
-
-  const logoutHandler = ()=>{
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("authRefreshToken");
-      navigate('/login');
-  }
+    fetchVanazari();
+  }, []);
 
 
-  if(news==null)
+  if(news==null||vanzari==null)
   {
       return  (
       <ContainerPagina>
@@ -107,13 +92,27 @@ const AdmPage = ()  => {
         })
     }
 
+    function afisareVanzari(info){
+        return info.map((el,index)=>{
+            return(
+                <div key={index}>
+                    <h2>{el.dataStart}</h2>
+                    <h3>{el.dataStop}</h3>
+                    <p>{el.numeBilet}</p>
+                </div>
+            );
+        })
+    }
+
     return  (
       <ContainerPagina>
           <div >
             <div>
               {afisareNews(news)}
             </div>
-            <button className="" onClick={logoutHandler}>Logout</button>
+            <div>
+              {afisareVanzari(vanzari)}
+            </div>
             <h1>Administrare</h1>
             <button className="" onClick={()=>navigate('/inregistrare-administrare')}>Adauga User</button>
           </div>

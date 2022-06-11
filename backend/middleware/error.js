@@ -7,7 +7,7 @@ const errorHandler = (err,req,res,next) =>
 
     if(err.code ===11000)
     {
-        const message = `Acest email exista deja!`;
+        const message = `Acest email sau cnp exista deja!`;
         error = new ErrorResponse(message,400);
     }
 

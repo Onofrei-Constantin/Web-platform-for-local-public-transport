@@ -1,0 +1,193 @@
+import { axiosJWT } from "../componente/axiosJWT";
+import React,{useEffect,useContext,useState} from "react";
+import {useNavigate } from 'react-router-dom';
+import ContainerPagina from "../componente/containerPagina";
+import { UserContext } from "../componente/UserContext";
+import {ProdusContext } from "../componente/ProdusContext";
+
+const InformatiiUtilizator = ()  => {
+    let navigate = useNavigate();
+    const {user} = useContext(UserContext);
+    const {setProdus} = useContext(ProdusContext);
+    const [seIncarca, setSeIncarca] = useState(true);
+    const [abonamente,setAbonamente] = useState(null);
+
+    useEffect(() => {
+    if(!localStorage.getItem("authToken")||!localStorage.getItem("authRefreshToken"))
+    {
+      navigate('/')
+    }
+    }, [navigate]);
+
+    useEffect(()=>{
+        const getAbonamenteUser = async ()=>{
+        
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        };
+
+        await axiosJWT.get('http://localhost:3001/private/vanzariUtilizator/'+user.user,config)
+            .then(response=>{ 
+                if(response.data.length>0)
+                {
+                  setAbonamente(response.data);
+                }
+                setSeIncarca(false);
+            })
+            .catch(function (error) {
+            if (error.response) {
+                // Request made and server responded
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+                } else if (error.request) {
+                // The request was made but no response was received
+                console.log(error.request);
+                } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+                }
+            }); 
+          }
+
+        getAbonamenteUser();
+
+    },[user]);
+
+
+    if(seIncarca)
+    {
+        return (
+        <ContainerPagina>
+            <div >
+                <h1>Se incarca datele...</h1>
+            </div>
+        </ContainerPagina>
+        );
+    }
+
+    function afisareBilete(info){
+        return info.filter(el=>el.tipImagine==="bilet").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+            return(
+                <div key={index}>
+                    <h3>{el.idTranzactie}</h3>
+                    <h3>{el.user}</h3>
+                    <h3>{el.tipImagine}</h3>
+                    <h3>{el.tip}</h3>
+                    <h3>{el.pret}</h3>
+                    <h3>{el.activ.toString()}</h3>
+                    <h3>{el.cerereValidare.toString()}</h3>
+                     <h3>{el.tipBilet}</h3>
+                </div>
+            );
+        })
+    }
+
+    function afisareAbonamenteNominale(info){
+        return info.filter(el=>el.tipImagine==="abonament"&&el.tip==="nominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+            return(
+                <div key={index}>
+                    <h3>{el.idTranzactie}</h3>
+                    <h3>{el.user}</h3>
+                    <h3>{el.tipImagine}</h3>
+                    <h3>{el.tip}</h3>
+                    <h3>{el.pret}</h3>
+                    <h3>{el.activ.toString()}</h3>
+                    <h3>{el.cerereValidare.toString()}</h3>
+                    <h3>{el.tipBilet}</h3>
+                    {(el.expirat===false&&el.activ===false&&el.anulat===false&&el.cerereValidare===false) &&<button className="" onClick={()=>handleAnulare({pret:el.pret,id:el._id,idPayment:el.idPayment})}>Anuleaza abonament</button>} 
+                    {(el.expirat===false&&el.activ===false&&el.anulat===false&&el.cerereValidare===false) &&<button className="" onClick={()=>handleValidare({idBilet:el._id,tipBilet:el.tipBilet})}>Valideaza abonament</button>}
+                    {(el.expirat===true&&el.activ===true&&el.anulat===false) &&<button className="" onClick={()=>handleReinoire(el)}>Reinoieste abonament</button>}
+                </div>
+            );
+        })
+    }
+
+    function afisareAbonamenteNenominale(info){
+        return info.filter(el=>el.tipImagine==="abonament"&&el.tip==="nenominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+            return(
+                <div key={index}>
+                    <h3>{el.idTranzactie}</h3>
+                    <h3>{el.user}</h3>
+                    <h3>{el.tipImagine}</h3>
+                    <h3>{el.tip}</h3>
+                    <h3>{el.pret}</h3>
+                    <h3>{el.activ.toString()}</h3>
+                    <h3>{el.cerereValidare.toString()}</h3>
+                    <h3>{el.tipBilet}</h3>
+                </div>
+            );
+        })
+    }
+
+    async function handleAnulare(props){
+        const {pret,id,idPayment} = props;
+
+        if(pret===0)
+        {
+
+            try {
+                await axiosJWT.post('http://localhost:3001/private/vanzariAnuleaza/'+id);
+
+
+                navigate('/rambursare');
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        else
+        {
+            try {
+                const config = {
+                    headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                    },
+                };
+
+                await axiosJWT.post('http://localhost:3001/private/cancelPayment',{payment_intent:idPayment},config)
+                
+                await axiosJWT.post('http://localhost:3001/private/vanzariAnuleaza/'+id);
+
+               
+
+                navigate('/rambursare');
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    function handleValidare(props){
+        const {idBilet,tipBilet} = props;
+        navigate('/validare',{state:{idBilet:idBilet,tipBilet:tipBilet}});
+    }
+
+    function handleReinoire(props) {
+        const produs = props;
+        produs.reinoire = true;
+        setProdus(produs);
+        navigate('/checkout');
+    }
+
+
+
+  return (
+    <ContainerPagina>
+      <div >
+        <h1>Informatii Utilizator</h1>
+        <h1>Abonamente nominale</h1>
+        {afisareAbonamenteNominale(abonamente||[])}
+        <h1>Abonamente nenominale</h1>
+        {afisareAbonamenteNenominale(abonamente||[])}
+        <h1>Bilete</h1>
+        {afisareBilete(abonamente||[])}
+      </div>
+    </ContainerPagina>
+  );
+}
+
+export default InformatiiUtilizator;

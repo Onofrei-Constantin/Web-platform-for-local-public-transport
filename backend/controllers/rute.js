@@ -1,4 +1,3 @@
-const router = require('express').Router();
 let Ruta = require('../models/rute.model');
 
 exports.rute =(req,res) =>{

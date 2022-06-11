@@ -1,22 +1,55 @@
 const User = require('../models/user.model')
 const ErrorResponse = require('../utils/errorResponse')
 const jwt = require("jsonwebtoken");
-let refreshTokens = [];
+const axios = require('axios');
 
-exports.refresh = (req,res)=>{
+
+exports.refresh = async (req,res)=>{
     const refreshToken = req.body.token;
     if (!refreshToken) return res.status(401).json("You are not authenticated!");
-    if (!refreshTokens.includes(refreshToken)) {
-    return res.status(403).json("Refresh token is not valid!");
+    
+    const dataToken = await axios.post('http://localhost:3001/public/resetTokenList',{token:refreshToken}).catch(function (error) {
+        if (error.response) {
+            // Request made and server responded
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+            } else if (error.request) {
+            // The request was made but no response was received
+            console.log(error.request);
+            } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+            }
+        });
+    
+
+    
+    if (!dataToken) {
+        return res.status(403).json("Refresh token is not valid!");
     }
-    jwt.verify(refreshToken,process.env.JWT_REFRESH_SECRET,(err,user)=>{
+
+    jwt.verify(refreshToken,process.env.JWT_REFRESH_SECRET,async (err,user)=>{
         err && console.log(err);
-        refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+
+        const id = dataToken.data._id;
+
+        try {
+            await axios.post('http://localhost:3001/public/deleteResetTokenList/'+id);
+        } catch (error) {
+            console.log("Eroare la 3!");
+            return res.status(400).json("Eroare la 3!")
+        }
 
         const newAccessToken = getSignedToken(user);
         const newRefreshToken = getRefreshToken(user);
 
-        refreshTokens.push(newRefreshToken);
+        try {
+            await axios.post('http://localhost:3001/public/addResetTokenList',{token:newRefreshToken});
+        } catch (error) {
+            console.log("Eroare la 4!");
+            return res.status(400).json("Eroare la 4!")
+        }
 
         res.status(200).json({
             accessToken: newAccessToken,
@@ -27,12 +60,12 @@ exports.refresh = (req,res)=>{
 
 
 exports.register = async(req,res,next) =>{
-    const {email,parola,nume,prenume,telefon,adresa} = req.body;
+    const {email,cnp,parola,nume,prenume,telefon,adresa} = req.body;
     const pozitie = false;
 
     try {
         const user = await User.create({
-            email,parola,nume,prenume,telefon,adresa,pozitie
+            email,cnp,parola,nume,prenume,telefon,adresa,pozitie
         });
 
         sendToken(user,201,res);
@@ -42,13 +75,15 @@ exports.register = async(req,res,next) =>{
 };
 
 exports.registerAdmin = async(req,res,next) =>{
-    const {email,parola,nume,prenume,telefon,adresa} = req.body;
+    const {email,cnp,parola,nume,prenume,telefon,adresa} = req.body;
     const pozitie = true;
 
     try {
         await User.create({
-            email,parola,nume,prenume,telefon,adresa,pozitie
+            email,cnp,parola,nume,prenume,telefon,adresa,pozitie
         });
+
+        res.status(201).json({sucess:true});
     } catch (error) {
        next(error);
     }
@@ -87,20 +122,55 @@ exports.login = async(req,res,next) =>{
 };
 
 
-exports.logout = (req,res)=>{
-    const refreshToken = req.body.token
-    refreshTokens = refreshTokens.filter((token)=>token!==refreshToken)
+exports.logout = async (req,res)=>{
+    const refreshToken = req.body.token;
+    if (!refreshToken) return res.status(401).json("You are not authenticated!");
+
+    const dataToken = await axios.post('http://localhost:3001/public/resetTokenList',{token: refreshToken}).catch(function (error) {
+        if (error.response) {
+            // Request made and server responded
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+            } else if (error.request) {
+            // The request was made but no response was received
+            console.log(error.request);
+            } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+            }
+        });
+
+    if (!dataToken) {
+        return res.status(403).json("Refresh token is not valid!");
+    }
+
+    const id = dataToken.data._id;
+
+    try {
+        await axios.post('http://localhost:3001/public/deleteResetTokenList/'+id);
+    } catch (error) {
+        console.log("Eroare la 6!");
+        return res.status(400).json("Eroare la 6!")
+    }
     res.status(200).json("Logout cu succes!")
 }
 
 
-const sendToken = (user,statusCode,res) =>
+const sendToken = async (user,statusCode,res) =>
 {
     const accessToken = getSignedToken(user);
     const refreshToken = getRefreshToken(user);
-    refreshTokens.push(refreshToken);
+    
+    try {
+        await axios.post('http://localhost:3001/public/addResetTokenList',{token:refreshToken})
+    }catch (error) {
+        console.log("Eroare la 1!");
+        return res.status(400).json("Eroare la 1!")
+    }
+
     res.status(statusCode).json({
-        sucess:true,email:user.email,pozitie:user.pozitie,accessToken,refreshToken,
+        sucess:true,email:user.email,cnp:user.cnp,pozitie:user.pozitie,accessToken,refreshToken,
     });
 };
 

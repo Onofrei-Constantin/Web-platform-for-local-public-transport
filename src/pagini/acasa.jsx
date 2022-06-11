@@ -17,12 +17,6 @@ const Home = ()  => {
     const[bilete,getBilete] = useState(null);
     const navigate = useNavigate();
 
-    const logoutHandler = ()=>{
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("authRefreshToken");
-      navigate('/login');
-    }
-
     const getToateNoutatile = ()=>{
          axios.get('http://localhost:3001/public/anunturi')
             .then(response=>{
@@ -84,7 +78,7 @@ const Home = ()  => {
        return info.map((el,index)=>{
             return(
                 <div className="home-bilete-sectiune" key={index}>
-                    <img className="home-bilete-imagine" src={el.tip==='bilet' ? Bilet : Abonament} alt=""/>
+                    <img className="home-bilete-imagine" src={el.tipImagine==='bilet' ? Bilet : Abonament} alt=""/>
                     <h2 className="home-bilete-h2">{el.numeBilet}</h2>
                     <p className="home-bilete-p">{el.pret + " Lei"}</p>
                     <p className="home-bilete-p">{el.valabilitate}</p>
@@ -111,7 +105,6 @@ const Home = ()  => {
           <button className="home-bilete-buton" onClick={()=>navigate('/tarife')}>Vezi mai multe informatii despre tarife</button>
         </div>
       </div>
-      <button className="" onClick={logoutHandler}>Logout</button>
     </ContainerPagina>
   );
 }

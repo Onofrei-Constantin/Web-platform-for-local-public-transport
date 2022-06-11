@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const crypto = require("crypto");
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     email: {type: String, required:[true,"Introdu un email"], unique:true,trim:true},
+    cnp: {type: Number, required:[true,"Introdu un cnp"], unique:true,trim:true,length:13},
     parola : {type: String, required:[true,"Introdu o parola"], minlength:6,select:false},
     nume : {type: String, required:[true,"Introdu nume"], minlength:2,trim:true},
     prenume : {type: String, required:[true,"Introdu prenume"], minlength:2,trim:true},

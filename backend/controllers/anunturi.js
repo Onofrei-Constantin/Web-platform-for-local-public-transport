@@ -1,5 +1,3 @@
-const router = require('express').Router();
-const { default: userEvent } = require('@testing-library/user-event');
 let Anunt = require('../models/anunturi.model');
 
 exports.anunturi = (req,res) =>{

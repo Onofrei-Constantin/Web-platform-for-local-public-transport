@@ -3,7 +3,6 @@ import ContainerPagina from "../componente/containerPagina";
 import {useLocation } from 'react-router-dom';
 import '../css/rute.css';
 import axios from "axios";
-//import {dataRute} from '../data/dataRute'
 import {
   GoogleMap,
   useJsApiLoader,

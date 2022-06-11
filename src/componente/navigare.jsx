@@ -1,11 +1,17 @@
-import React,{useEffect, useState} from "react";
-import {Link} from 'react-router-dom';
+import React,{useEffect, useState,useContext} from "react";
+import {Link,useNavigate} from 'react-router-dom';
 import '../css/navigare.css';
 import Meniu from '../assets/navigare/meniu.svg';
 import Inchide from '../assets/navigare/inchide.svg';
 import SageataJos from '../assets/navigare/sageataJos.svg';
 import Logo from '../assets/navigare/logoTPL.png';
 import {dataDM1} from '../data/dataDM1';
+import axios from "axios";
+import jwt_decode from 'jwt-decode';
+import { UserContext } from "./UserContext";
+import { AbonamentContext } from "./AbonamentContext";
+import { ProdusContext } from "./ProdusContext";
+import { axiosJWT } from "./axiosJWT";
 
 
 const Navigare = ()  => {
@@ -14,8 +20,10 @@ const Navigare = ()  => {
   const [arataMeniuMobil, setArataMeniuMobil] = useState(false);
   const [arataMeniuDrop1, setArataMeniuDrop1] = useState(false);
   const [arataMeniuDrop2, setArataMeniuDrop2] = useState(false);
-
-  
+  const {setUser} = useContext(UserContext);
+  const {setAbonament} = useContext(AbonamentContext);
+  const {setProdus} = useContext(ProdusContext);
+  const navigate = useNavigate();
 
   function renderDM(info)
   {
@@ -104,8 +112,57 @@ const Navigare = ()  => {
 
   },[]);
 
-  
 
+  const refreshToken = async ()=>{
+    try {
+      const res = await axios.post("http://localhost:3001/auth/refresh",{token : localStorage.getItem("authRefreshToken")})
+      localStorage.setItem("authToken", res.data.accessToken)
+      localStorage.setItem("authRefreshToken", res.data.refreshToken)
+      return res.data;
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  axiosJWT.interceptors.request.use(
+    async (config) =>{
+      let currentDate = new Date();
+      const decodedToken = jwt_decode(localStorage.getItem("authToken"))
+      
+      if(decodedToken.exp * 1000 < currentDate.getTime())
+      {
+        const data = await refreshToken();
+        config.headers["authorization"] = "Bearer " + data.accessToken;
+      }
+      return config;
+    },(error)=>{
+      return Promise.reject(error);
+    }
+  );
+
+
+  const logoutHandler = async () =>{
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      if(localStorage.getItem("authToken")||localStorage.getItem("authRefreshToken")){
+        await axiosJWT.post("http://localhost:3001/auth/logout",{token : localStorage.getItem("authRefreshToken")},config)
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("authRefreshToken");
+        localStorage.removeItem("userValue");
+        localStorage.removeItem("produsValue");
+        localStorage.removeItem("abonamentValue");
+        setUser({user:null,cnp:null});
+        setAbonament(null);
+        setProdus(null);
+        window.location.reload();
+      }
+  }
+
+  
   return (
     <>
     <nav className="navigare-nav">
@@ -133,7 +190,16 @@ const Navigare = ()  => {
 
         <button className="navigare-buton" onClick={()=> setMeniuDeschis(!meniuDeschis)} >
           {meniuDeschis && arataMeniuMobil ? <img src={Inchide} alt="" />  : <img src={Meniu} alt="" />} 
+        </button>
+
+        <button className="" onClick={()=>navigate('/login')} > Login
+        </button>
+         <button className="" onClick={()=>navigate('/informatii-utilizator')} > Profil
+        </button>    
+        <button className="" onClick={()=>navigate('/inregistrare')} > Register
         </button>   
+        <button className="" onClick={logoutHandler} > Logout
+        </button>      
     </nav>
     </>
   );
