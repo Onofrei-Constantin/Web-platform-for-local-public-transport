@@ -1,9 +1,10 @@
-import React,{useEffect, useState,useContext} from "react";
+import React,{useEffect, useState,useContext,useRef} from "react";
 import {Link,useNavigate} from 'react-router-dom';
 import '../css/navigare.css';
 import Meniu from '../assets/navigare/meniu.svg';
 import Inchide from '../assets/navigare/inchide.svg';
 import SageataJos from '../assets/navigare/sageataJos.svg';
+import User from '../assets/navigare/user.svg';
 import Logo from '../assets/navigare/logoTPL.png';
 import {dataDM1} from '../data/dataDM1';
 import axios from "axios";
@@ -17,13 +18,29 @@ import { axiosJWT } from "./axiosJWT";
 const Navigare = ()  => {
 
   const [meniuDeschis, setMeniuDeschis] = useState(false);
+  const [meniuUser,setMeniuUser] = useState(false);
   const [arataMeniuMobil, setArataMeniuMobil] = useState(false);
   const [arataMeniuDrop1, setArataMeniuDrop1] = useState(false);
   const [arataMeniuDrop2, setArataMeniuDrop2] = useState(false);
-  const {setUser} = useContext(UserContext);
+  const {user,setUser} = useContext(UserContext);
   const {setAbonament} = useContext(AbonamentContext);
   const {setProdus} = useContext(ProdusContext);
+  const userRef = useRef();
   const navigate = useNavigate();
+
+
+  useEffect(()=>{
+    const closeMeniu = e =>{
+      if(e.path[0]!==userRef.current)
+      {
+        setMeniuUser(false);
+      }
+    };
+
+    document.body.addEventListener('click',closeMeniu);
+
+    return () =>document.body.removeEventListener('click',closeMeniu);
+  },[]);
 
   function renderDM(info)
   {
@@ -140,7 +157,6 @@ const Navigare = ()  => {
     }
   );
 
-
   const logoutHandler = async () =>{
       const config = {
         headers: {
@@ -149,13 +165,17 @@ const Navigare = ()  => {
       };
 
       if(localStorage.getItem("authToken")||localStorage.getItem("authRefreshToken")){
-        await axiosJWT.post("http://localhost:3001/auth/logout",{token : localStorage.getItem("authRefreshToken")},config)
+        try {
+          await axiosJWT.post("http://localhost:3001/auth/logout",{token : localStorage.getItem("authRefreshToken")},config)
+        } catch (error) {
+          console.log(error);
+        }
         localStorage.removeItem("authToken");
         localStorage.removeItem("authRefreshToken");
         localStorage.removeItem("userValue");
         localStorage.removeItem("produsValue");
         localStorage.removeItem("abonamentValue");
-        setUser({user:null,cnp:null});
+        setUser({user:null,cnp:null,pozitie:null});
         setAbonament(null);
         setProdus(null);
         window.location.reload();
@@ -167,7 +187,7 @@ const Navigare = ()  => {
     <>
     <nav className="navigare-nav">
         <img src={Logo} alt="" className="navigare-logo"/>
-        <ul className={meniuDeschis && arataMeniuMobil? "navigare-links-mobile" : "navigare-links"} >
+        <ul className={meniuDeschis && arataMeniuMobil? "navigare-links-mobile" : "navigare-links"}>
             <Link className="navigare-link-css" to='/' onClick={()=> setMeniuDeschis(false)}>
               <li>Acasa</li>
             </Link>
@@ -180,26 +200,34 @@ const Navigare = ()  => {
             <Link className="navigare-link-css" to='/anunturi' onClick={()=> setMeniuDeschis(false)}>
               <li>Anunturi</li>
             </Link>
-            <li className="navigare-link-css" onMouseEnter={onMouseEnter1} onMouseLeave={onMouseLeave1} onClick={onMobileDisplay1} >Contact<img src={SageataJos} alt="" />
+            <div onMouseEnter={onMouseEnter1} onMouseLeave={onMouseLeave1} onClick={onMobileDisplay1} >
+              <li className="navigare-link-css" >Contact<img  src={SageataJos} alt="" /></li>
               {arataMeniuDrop1  && renderDM(dataDM1)}
-            </li>
-            <li className="navigare-link-css" onMouseEnter={onMouseEnter2} onMouseLeave={onMouseLeave2} onClick={onMobileDisplay2}>Contact<img src={SageataJos} alt="" />
-              {arataMeniuDrop2 && renderDM(dataDM1)} 
-            </li>
+            </div>
+            <div onMouseEnter={onMouseEnter2} onMouseLeave={onMouseLeave2} onClick={onMobileDisplay2} >
+              <li className="navigare-link-css" >Contact<img  src={SageataJos} alt=""/></li>
+              {arataMeniuDrop2  && renderDM(dataDM1)}
+            </div>
         </ul>
 
-        <button className="navigare-buton" onClick={()=> setMeniuDeschis(!meniuDeschis)} >
-          {meniuDeschis && arataMeniuMobil ? <img src={Inchide} alt="" />  : <img src={Meniu} alt="" />} 
+        <button className="navigare-buton" onClick={()=> setMeniuDeschis(!meniuDeschis)}>
+          {meniuDeschis && arataMeniuMobil ? <img src={Inchide} alt="" />  : <img src={Meniu} alt=""/>} 
         </button>
 
-        <button className="" onClick={()=>navigate('/login')} > Login
-        </button>
-         <button className="" onClick={()=>navigate('/informatii-utilizator')} > Profil
-        </button>    
-        <button className="" onClick={()=>navigate('/inregistrare')} > Register
-        </button>   
-        <button className="" onClick={logoutHandler} > Logout
-        </button>      
+        <img className="navigare-img-user" src={User} alt='' onClick={()=>{setMeniuUser(!meniuUser)}} ref={userRef}/>
+        {(user.user==null&&meniuUser)&&
+        <div className="navigare-meniu-utilizator-content">
+          <button className="navigare-meniu-utilizator-buton" onClick={()=>navigate('/login')} >Logare</button>
+          <hr className="header-user-hr"/>
+          <button className="navigare-meniu-utilizator-buton" onClick={()=>navigate('/inregistrare')} >Inregistrare</button>  
+        </div>}
+
+        {(user.user!==null&&meniuUser)&&
+          <div className="navigare-meniu-utilizator-content">
+          <button className="navigare-meniu-utilizator-buton" onClick={()=>navigate('/informatii-utilizator')}>Informatii bilete</button>    
+          <hr className="navigare-user-hr"/>
+          <button className="navigare-meniu-utilizator-buton" onClick={logoutHandler}>Deconectare</button>      
+        </div>}
     </nav>
     </>
   );

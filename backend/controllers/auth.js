@@ -61,11 +61,10 @@ exports.refresh = async (req,res)=>{
 
 exports.register = async(req,res,next) =>{
     const {email,cnp,parola,nume,prenume,telefon,adresa} = req.body;
-    const pozitie = false;
 
     try {
         const user = await User.create({
-            email,cnp,parola,nume,prenume,telefon,adresa,pozitie
+            email,cnp,parola,nume,prenume,telefon,adresa
         });
 
         sendToken(user,201,res);
@@ -76,7 +75,22 @@ exports.register = async(req,res,next) =>{
 
 exports.registerAdmin = async(req,res,next) =>{
     const {email,cnp,parola,nume,prenume,telefon,adresa} = req.body;
-    const pozitie = true;
+    const pozitie = 1;
+
+    try {
+        await User.create({
+            email,cnp,parola,nume,prenume,telefon,adresa,pozitie
+        });
+
+        res.status(201).json({sucess:true});
+    } catch (error) {
+       next(error);
+    }
+};
+
+exports.registerAngajat = async(req,res,next) =>{
+    const {email,cnp,parola,nume,prenume,telefon,adresa} = req.body;
+    const pozitie = 2;
 
     try {
         await User.create({
@@ -156,6 +170,11 @@ exports.logout = async (req,res)=>{
     res.status(200).json("Logout cu succes!")
 }
 
+exports.gasireUtilizator = async (req,res) =>{
+    await User.find({'email':req.params.user}).limit(1)
+        .then(user => res.status(200).json(user))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
 
 const sendToken = async (user,statusCode,res) =>
 {

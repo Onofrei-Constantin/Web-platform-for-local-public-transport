@@ -4,13 +4,21 @@ import {useNavigate } from 'react-router-dom';
 import ContainerPagina from "../componente/containerPagina";
 import { UserContext } from "../componente/UserContext";
 import {ProdusContext } from "../componente/ProdusContext";
+import {AbonamentContext} from "../componente/AbonamentContext";
+import PopupQR from "../componente/popupQR";
+import QRcod from 'qrcode';
 
-const InformatiiUtilizator = ()  => {
+    const InformatiiUtilizator = ()  => {
     let navigate = useNavigate();
     const {user} = useContext(UserContext);
+    const {abonament,setAbonament} = useContext(AbonamentContext);
     const {setProdus} = useContext(ProdusContext);
     const [seIncarca, setSeIncarca] = useState(true);
     const [abonamente,setAbonamente] = useState(null);
+    const [buttonPopUp,setButtonPopUp] = useState(false);
+    const [codQr,setCodQr] = useState(null);
+    const [codQrPopUp,setCodQrPopUp] = useState(null);
+    
 
     useEffect(() => {
     if(!localStorage.getItem("authToken")||!localStorage.getItem("authRefreshToken"))
@@ -20,14 +28,57 @@ const InformatiiUtilizator = ()  => {
     }, [navigate]);
 
     useEffect(()=>{
-        const getAbonamenteUser = async ()=>{
+        function generateQR()
+        {
+            QRcod.toDataURL(codQr).then((data)=>{
+                setCodQrPopUp(data);
+            });
+        }
         
+        if(codQr!=null)
+        {
+            generateQR();
+        }
+    },[codQr]);
+
+    useEffect(()=>{
         const config = {
             headers: {
             "Content-Type": "application/json",
             authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
         };
+
+        const getAbonamentUser = async ()=>{ 
+
+        await axiosJWT.post('http://localhost:3001/private/vanzariAbonament',{user:user.user},config)
+            .then(response=>{ 
+                if(response.data.length>0)
+                {
+                  setAbonament(response.data);
+                }
+                else
+                {
+                  setAbonament(null);
+                }
+            })
+            .catch(function (error) {
+            if (error.response) {
+                // Request made and server responded
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+                } else if (error.request) {
+                // The request was made but no response was received
+                console.log(error.request);
+                } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+                }
+            }); 
+          }
+
+        const getAbonamenteUser = async ()=>{
 
         await axiosJWT.get('http://localhost:3001/private/vanzariUtilizator/'+user.user,config)
             .then(response=>{ 
@@ -54,8 +105,9 @@ const InformatiiUtilizator = ()  => {
           }
 
         getAbonamenteUser();
+        getAbonamentUser();
 
-    },[user]);
+    },[user,setAbonament]);
 
 
     if(seIncarca)
@@ -70,54 +122,63 @@ const InformatiiUtilizator = ()  => {
     }
 
     function afisareBilete(info){
-        return info.filter(el=>el.tipImagine==="bilet").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+        return info.filter(el=>el.tip==="bilet").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
             return(
                 <div key={index}>
                     <h3>{el.idTranzactie}</h3>
                     <h3>{el.user}</h3>
-                    <h3>{el.tipImagine}</h3>
                     <h3>{el.tip}</h3>
+                    <h3>{el.nominal}</h3>
                     <h3>{el.pret}</h3>
                     <h3>{el.activ.toString()}</h3>
                     <h3>{el.cerereValidare.toString()}</h3>
-                     <h3>{el.tipBilet}</h3>
+                    <h3>{el.expirat.toString()}</h3>
+                    <h3>{el.anulat.toString()}</h3>
+                    <h3>{el.tipPersoana}</h3>
+                    <button className="" onClick={()=>{setCodQr(el.codQrDecodat);setButtonPopUp(true)}}>Vezi cod QR</button>
                 </div>
             );
         })
     }
 
     function afisareAbonamenteNominale(info){
-        return info.filter(el=>el.tipImagine==="abonament"&&el.tip==="nominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+        return info.filter( el=>el.tip==="abonament"&&el.nominal==="nominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
             return(
                 <div key={index}>
                     <h3>{el.idTranzactie}</h3>
                     <h3>{el.user}</h3>
-                    <h3>{el.tipImagine}</h3>
                     <h3>{el.tip}</h3>
+                    <h3>{el.nominal}</h3>
                     <h3>{el.pret}</h3>
                     <h3>{el.activ.toString()}</h3>
                     <h3>{el.cerereValidare.toString()}</h3>
-                    <h3>{el.tipBilet}</h3>
+                    <h3>{el.expirat.toString()}</h3>
+                    <h3>{el.anulat.toString()}</h3>
+                    <h3>{el.tipPersoana}</h3>
                     {(el.expirat===false&&el.activ===false&&el.anulat===false&&el.cerereValidare===false) &&<button className="" onClick={()=>handleAnulare({pret:el.pret,id:el._id,idPayment:el.idPayment})}>Anuleaza abonament</button>} 
-                    {(el.expirat===false&&el.activ===false&&el.anulat===false&&el.cerereValidare===false) &&<button className="" onClick={()=>handleValidare({idBilet:el._id,tipBilet:el.tipBilet})}>Valideaza abonament</button>}
-                    {(el.expirat===true&&el.activ===true&&el.anulat===false) &&<button className="" onClick={()=>handleReinoire(el)}>Reinoieste abonament</button>}
+                    {(el.expirat===false&&el.activ===false&&el.anulat===false&&el.cerereValidare===false) &&<button className="" onClick={()=>handleValidare({idTranzactie:el._id,tipPersoana:el.tipPersoana})}>Valideaza abonament</button>}
+                    {(el.expirat===true&&el.activ===false&&el.anulat===false&&el.inVanzare===true&&abonament==null) &&<button className="" onClick={()=>handleReinoire(el.idBilet)}>Reinoieste abonament</button>}
+                    <button className="" onClick={()=>{setCodQr(el.codQrDecodat);setButtonPopUp(true)}}>Vezi cod QR</button>
                 </div>
             );
         })
     }
 
     function afisareAbonamenteNenominale(info){
-        return info.filter(el=>el.tipImagine==="abonament"&&el.tip==="nenominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
+        return info.filter(el=>el.tip==="abonament"&&el.nominal==="nenominal").sort((el1,el2)=>{return (el1.activ > el2.activ) ? -1 : 1}).map((el,index)=>{
             return(
                 <div key={index}>
                     <h3>{el.idTranzactie}</h3>
                     <h3>{el.user}</h3>
-                    <h3>{el.tipImagine}</h3>
                     <h3>{el.tip}</h3>
+                    <h3>{el.nominal}</h3>
                     <h3>{el.pret}</h3>
                     <h3>{el.activ.toString()}</h3>
                     <h3>{el.cerereValidare.toString()}</h3>
-                    <h3>{el.tipBilet}</h3>
+                    <h3>{el.expirat.toString()}</h3>
+                    <h3>{el.anulat.toString()}</h3>
+                    <h3>{el.tipPersoana}</h3>
+                    <button className="" onClick={()=>{setCodQr(el.codQrDecodat);setButtonPopUp(true)}}>Vezi cod QR</button>
                 </div>
             );
         })
@@ -131,8 +192,6 @@ const InformatiiUtilizator = ()  => {
 
             try {
                 await axiosJWT.post('http://localhost:3001/private/vanzariAnuleaza/'+id);
-
-
                 navigate('/rambursare');
             } catch (error) {
                 console.log(error)
@@ -152,8 +211,6 @@ const InformatiiUtilizator = ()  => {
                 
                 await axiosJWT.post('http://localhost:3001/private/vanzariAnuleaza/'+id);
 
-               
-
                 navigate('/rambursare');
             } catch (error) {
                 console.log(error)
@@ -162,17 +219,26 @@ const InformatiiUtilizator = ()  => {
     }
 
     function handleValidare(props){
-        const {idBilet,tipBilet} = props;
-        navigate('/validare',{state:{idBilet:idBilet,tipBilet:tipBilet}});
+        const {idTranzactie,tipPersoana} = props;
+        navigate('/validare',{state:{idTranzactie:idTranzactie,tipPersoana:tipPersoana}});
     }
 
-    function handleReinoire(props) {
-        const produs = props;
-        produs.reinoire = true;
-        setProdus(produs);
-        navigate('/checkout');
-    }
+    async function handleReinoire(props) {
+        try {
+            const config = {
+                    headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                    },
+            };
 
+            const {data} = await axiosJWT.post('http://localhost:3001/private/bileteGaseste',{id:props},config);
+            setProdus(data);
+            navigate('/checkout');
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
   return (
@@ -186,6 +252,10 @@ const InformatiiUtilizator = ()  => {
         <h1>Bilete</h1>
         {afisareBilete(abonamente||[])}
       </div>
+      <PopupQR trigger={buttonPopUp} setTrigger={setButtonPopUp}>
+        <h1>Codul QR este</h1>
+        <img src={codQrPopUp} alt=''/>
+      </PopupQR>
     </ContainerPagina>
   );
 }

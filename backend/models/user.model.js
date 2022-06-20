@@ -11,7 +11,7 @@ const userSchema = new Schema({
     prenume : {type: String, required:[true,"Introdu prenume"], minlength:2,trim:true},
     telefon : {type: Number, required:[true,"Introdu un numar telefon"], length:11},
     adresa : {type: String, required:[true,"Introdu o adresa"]},
-    pozitie: {type: Boolean, required:true},
+    pozitie: {type: Number, required:true,default:0},
 },{
     timestamps:true,    
 });

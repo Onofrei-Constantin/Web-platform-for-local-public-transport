@@ -29,17 +29,18 @@ const Header = ()  => {
   function renderMeniuLimbaDrop () {
     return(
     <div className="header-drop-container" onClick={()=>setArataMeniuDrop(false)} > 
-      <div className="header-drop-content">
+      <div className="header-drop-content" onClick={()=>i18next.changeLanguage('ro')}>
         <img src={Rom} alt="" className="header-drop-flag"/>
-        <button onClick={()=>i18next.changeLanguage('ro')}>
+        <p className="header-drop-p">
           Romana
-        </button>
+        </p>
       </div>
-      <div className="header-drop-content">
+      <hr className="header-drop-hr"/>
+      <div className="header-drop-content" onClick={()=>i18next.changeLanguage('en')}>
         <img src={Eng} alt="" className="header-drop-flag"/>
-        <button onClick={()=>i18next.changeLanguage('en')}>
+        <p className="header-drop-p">
           English
-        </button>   
+        </p>   
       </div>          
     </div>
     );

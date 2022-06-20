@@ -1,4 +1,4 @@
-.home-page{
+.home-page-container{
     display: flex;
 }
 
@@ -48,12 +48,24 @@
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
 }
-.home-anunuti-buton{
+.home-anunturi-buton{
     margin-top: 15px;
     margin-bottom: 15px;
-    width: 100px;
+    width: 125px;
     align-self: center;
+    background-color: white;
+    color: green;
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 15px;
 }
+
+.home-anunturi-buton:hover{
+    cursor: pointer;
+    background-color: lightgrey;
+}
+
 .home-anunturi-separator{
     border-top: 1px dashed #fff;
     border-bottom: 1px dashed #fff;
@@ -75,13 +87,15 @@
     width: 100px;
     align-self: center;
 }
-.home-bilete-h2{
+.home-bilete-h3{
     padding-top: 10px;
     text-align: center;
 }
 .home-bilete-p{
     padding-top: 10px;
     text-align: center;
+    font-weight: bold;
+    color: green;
 }
 
 .home-bilete-h1-main{
@@ -97,7 +111,7 @@
 
 .home-bilet-wrap{
     display: flex;
-        flex-direction: column;
+    flex-direction: column;
     flex: 35%;
 }
 .home-bilete-buton{
@@ -105,6 +119,17 @@
     margin-bottom: 15px;
     width: 200px;
     align-self: center;
+    background-color: green;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 15px;
+}
+
+.home-bilete-buton:hover {
+    cursor: pointer;
+    color: lightgray;
 }
 .home-anuntui-h1-main{
     color: green;
@@ -112,8 +137,93 @@
     margin-bottom: 20px;
 }
 
+
+.home-importante-wrap {
+    display: flex;
+    flex-direction: column;
+    background-color: green;
+    margin-bottom: 20px;
+    margin-top: 30px;
+}
+
+.home-importante-h1-main
+{
+    margin-top: 20px;
+    color: white;
+    text-align: center;
+}
+
+.home-intrebari-container{
+    width: 100%;
+    padding: 15px;
+}
+
+.home-intrebari-container .home-intrebare{
+    background-color: white;
+    margin: 15px;
+    padding: 15px;
+    box-shadow: 0px  0px 10px rgba(0, 0, 0, 0.2);
+}
+.home-intrebari-container .home-intrebare.deschis .home-intrebare-question{
+    margin-bottom: 15px;
+}
+
+.home-intrebari-container .home-intrebare .home-intrebare-question{
+    position: relative;
+    font-size: 20px;
+    padding-right: 80px;
+    font-weight: bold; 
+    word-wrap: break-word;
+    transition: all 0.4s ease;
+}
+
+.home-intrebari-container .home-intrebare .home-intrebare-question::after {
+    content: '';
+    position: absolute;
+    top:50%;
+    right: 0px;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background-image: url('../assets/acasa/plus.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: all 0.4s ease;
+}
+
+.home-intrebari-container .home-intrebare .home-raspuns{
+    opacity: 0;
+    max-height: 0px;
+    overflow-y: hidden;
+    transition: all 0.4s ease;
+
+    /* position: relative;
+    font-size: 20px;
+    padding-right: 80px;
+    font-weight: bold;
+    word-wrap: break-word; */
+}
+
+.home-intrebari-container .home-intrebare.deschis .home-intrebare-question::after
+{
+    transform: translateY(-50%) rotate(180deg);
+    background-image: url('../assets/acasa/minus.svg');
+}
+
+.home-intrebari-container .home-intrebare.deschis .home-raspuns
+{
+    max-height: 1000px;
+    opacity: 1;
+    position: relative;
+    font-size: 20px;
+    padding-right: 80px;
+    font-weight: bold;
+    word-wrap: break-word; 
+}
+
 @media screen and (max-width: 780px) {
-    .home-page {
+    .home-page-container {
             flex-direction: column;
     }
     .home-anunt-wrap{

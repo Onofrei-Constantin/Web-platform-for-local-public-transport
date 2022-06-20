@@ -1,0 +1,41 @@
+.popup-informatii{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 2;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-informatii-inner{
+    overflow: auto;
+    position: relative;
+    padding: 32px;
+    width: 100%;
+    max-width: 1250px;
+    max-height: 650px;
+    background-color: white;
+    margin: 75px;
+}
+
+.popup-informatii-inner .popup-informatii-close
+{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+.popup-informatii-inner .popup-informatii-close:hover {
+    cursor: pointer;
+}
+
+@media screen and (max-width: 780px) {
+    .popup-informatii-inner {
+        margin: 0px;  
+    }
+}

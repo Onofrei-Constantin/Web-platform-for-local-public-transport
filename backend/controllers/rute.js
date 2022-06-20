@@ -7,11 +7,14 @@ exports.rute =(req,res) =>{
 };
 
 exports.ruteAdauga =(req,res)=>{
+    const linie = req.body.linie;
     const denumire = req.body.denumire;
     const numeStatii = req.body.numeStatii;
-
+    const observatii = req.body.observatii;
+    const luni_vineri = req.body.luni_vineri;
+    const sambata_duminica = req.body.sambata_duminica;
     
-    const newRuta = new Ruta({denumire,numeStatii});
+    const newRuta = new Ruta({linie,denumire,numeStatii,observatii,luni_vineri,sambata_duminica});
 
     newRuta.save()
         .then(()=>res.json('Ruta adaugata!'))
@@ -30,15 +33,15 @@ exports.ruteSterge = (req,res)=>{
         .catch(err => res.status(400).json('Error: '+err));
 };
 
-exports.rutaActualizeaza =(req,res)=>{
-    Ruta.findById(req.params.id)
-        .then(rute=>{
-            rute.denumire = req.body.denumire;
-            rute.numeStatii = Array(req.body.numeStatii);
+// exports.rutaActualizeaza =(req,res)=>{
+//     Ruta.findById(req.params.id)
+//         .then(rute=>{
+//             rute.denumire = req.body.denumire;
+//             rute.numeStatii = Array(req.body.numeStatii);
 
-            rute.save()
-                .then(()=>res.json('Ruta actualizata!'))
-                .catch(err => res.status(400).json('Error: '+err));
-        })
-        .catch(err => res.status(400).json('Error: '+err));
-};
+//             rute.save()
+//                 .then(()=>res.json('Ruta actualizata!'))
+//                 .catch(err => res.status(400).json('Error: '+err));
+//         })
+//         .catch(err => res.status(400).json('Error: '+err));
+// };

@@ -3,7 +3,7 @@ import ContainerPagina from "../componente/containerPagina";
 import { AbonamentContext } from "../componente/AbonamentContext";
 import { UserContext } from "../componente/UserContext";
 import {useNavigate } from 'react-router-dom';
-import axios from "axios";
+import { axiosJWT } from "./axiosJWT";
 
 const Success = ()  => {
   let navigate = useNavigate();
@@ -19,7 +19,7 @@ const Success = ()  => {
         }
     }, [navigate]);
 
-useEffect(()=>{
+  useEffect(()=>{
         const getAbonamentUser = async ()=>{
         
         const config = {
@@ -29,7 +29,7 @@ useEffect(()=>{
             },
         };
 
-        await axios.get('http://localhost:3001/private/vanzariAbonament/'+user.user,config)
+        await axiosJWT.post('http://localhost:3001/private/vanzariAbonament',{user:user.user},config)
             .then(response=>{ 
                 if(response.data.length>0)
                 {

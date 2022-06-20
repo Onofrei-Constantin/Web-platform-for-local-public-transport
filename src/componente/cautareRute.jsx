@@ -1,6 +1,8 @@
 import React from "react";
 import { useEffect, useState,useRef } from "react";
 import {useNavigate } from 'react-router-dom';
+import Locatie from '../assets/cautareRute/locatie.svg'
+import axios from 'axios';
 import '../css/cautareRute.css'
 
 
@@ -31,7 +33,23 @@ const CautareRute = ()  => {
     const sugestiiRef1 = useRef();
     const sugestiiRef2 = useRef();
     const navigate = useNavigate();
-    const numeStatii = ['Statia0','Statia1','Statia2','Statia3','Statia4','Statia5','Statia6'];
+    const[numeStatii,setNumeStatii] = useState(null);
+    
+    useEffect(()=>{
+        getToateStatii();
+    },[]);
+
+
+    const getToateStatii = ()=>{
+         axios.get('http://localhost:3001/public/statiiNume')
+            .then( response=>{
+                if(response.data.length>0)
+                {
+                    setNumeStatii(response.data.map(el=>el.dataRute.label));
+                }
+            })
+            .catch(err => console.error('Error: '+ err));
+    }
 
     const onSugest1 = (plecare)=>{
         setPlecare(plecare)
@@ -54,7 +72,6 @@ const CautareRute = ()  => {
         }
         setSugestii1(matches)
         setPlecare(plecare);
-        
     }
 
     const onChangeHandler2 =(destinatie)=>{
@@ -75,24 +92,26 @@ const CautareRute = ()  => {
         navigate('/rute', { state:{plecareC: plecare, destinatieC: destinatie}});
     }
 
-
     return (
         <div className="cautare-rute-component">
             <hr className="cautare-rute-hr"/>
             <div className="cautare-rute-container">
-                <h1 className="cautare-rute-h1">Cautare Rute</h1>
+                <div className="cautare-rute-header-container">
+                    <img src={Locatie} alt=''/>
+                    <h1 className="cautare-rute-h1">Cautare Rute</h1>
+                </div>
                 <input className="cutare-rute-input" type="text" placeholder="Plecare" ref={sugestiiRef1} onChange={e=>onChangeHandler1(e.target.value)} value = {plecare} />
-                <div className="cautare-rute-drop1">
-                    {sugestii1 && sugestii1.map((el,index)=>
+                {sugestii1.length>0 && <div className="cautare-rute-drop1">
+                    {sugestii1.slice(0,3).map((el,index)=>
                         <div className="cautare-rute-drop-content" key={index} onClick={()=>onSugest1(el)}>{el}</div>
                     )}
-                </div>
+                </div>}
                 <input className="cutare-rute-input" type="text" placeholder="Sosire" ref={sugestiiRef2} onChange={e=>onChangeHandler2(e.target.value)} value={destinatie}/>
-                <div className="cautare-rute-drop2">
-                    {sugestii2 && sugestii2.map((el,index)=>
+                {sugestii2.length>0 &&<div className="cautare-rute-drop2">
+                    {sugestii2 && sugestii2.slice(0,3).map((el,index)=>
                         <div className="cautare-rute-drop-content" key={index} onClick={()=>onSugest2(el)}>{el}</div>
                     )}
-                </div>
+                </div>}
                 <button className="cutare-rute-buton" disabled={(plecare!=='' && destinatie!=='') ? false : true} onClick={()=>ArataCutare()}>Cauta</button>
             </div>
         </div>

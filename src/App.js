@@ -11,6 +11,7 @@ import Rute from './pagini/rute';
 import Tarife from './pagini/tarife';
 import Login from './administrare/login';
 import InregistrareAdministare from "./administrare/inregistrareAdministrare";
+import InregistrareAngajat from "./administrare/inregistrareAngajat";
 import PrivateRoute from "./administrare/privateRoute";
 import AdmPage from "./administrare/admPage";
 import CautareRute from "./componente/cautareRute";
@@ -30,12 +31,23 @@ import Inregistrare from "./pagini/inregistrare";
 import InformatiiUtilizator from "./pagini/informatiiUtilizator";
 import Rambursare from "./componente/rambursare";
 import Validare from "./pagini/validare";
+import Scanare from "./administrare/scanare";
+import Neautorizat from "./administrare/neautorizat";
+import Validari from "./administrare/validari";
+import ConfirmareValidare from "./administrare/confirmareValidare";
+import ValidareFaraCerere from "./administrare/validareFaraCerere";
+import AnunuriAdmin from "./administrare/anunuturiAdmin";
+import AnuntAdmin from "./componente/anuntAdmin";
+import AdaugaAnunt from "./administrare/adaugaAnunt";
+import BileteAdmin from "./administrare/bileteAdmin";
+import AdaugaBilet from "./administrare/adaugaBilet";
+import ModificaBilet from "./componente/biletAdmin";
 
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 function App() {
-  const [user,setUser] = useState({user:null,cnp:null});
+  const [user,setUser] = useState({user:null,cnp:null,pozitie:null});
   const [produs,setProdus] = useState(null);
   const [abonament,setAbonament] = useState(null);
 
@@ -68,12 +80,46 @@ function App() {
             <Navigare/>
             <CautareRute/>
             <Routes>
-              <Route path="/administrare" element={<PrivateRoute/>}>
+              <Route path="/administrare" element={<PrivateRoute pozitieNecesara={[1]}/>}>
                 <Route path="/administrare" element = {<AdmPage/>}/>
               </Route>
-              <Route path="/inregistrare-administrare" element={<PrivateRoute/>}>
+              <Route path="/anunuri-admin" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/anunuri-admin" element = {<AnunuriAdmin/>}/>
+              </Route>
+              <Route path="/anunuri-admin/anunt-admin" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/anunuri-admin/anunt-admin" element = {<AnuntAdmin/>}/>
+              </Route>
+              <Route path="/anunt-adaugare" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/anunt-adaugare" element = {<AdaugaAnunt/>}/>
+              </Route>
+              <Route path="/bilete-admin" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/bilete-admin" element = {<BileteAdmin/>}/>
+              </Route>
+              <Route path="/bilete-admin/modifica-bilet" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/bilete-admin/modifica-bilet" element = {<ModificaBilet/>}/>
+              </Route>
+              <Route path="/bilete-adaugare" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/bilete-adaugare" element = {<AdaugaBilet/>}/>
+              </Route>
+              <Route path="/inregistrare-administrare" element={<PrivateRoute pozitieNecesara={[1]}/>}>
                 <Route path="/inregistrare-administrare" element = {<InregistrareAdministare/>}/>
               </Route>
+              <Route path="/inregistrare-angajat" element={<PrivateRoute pozitieNecesara={[1]}/>}>
+                <Route path="/inregistrare-angajat" element = {<InregistrareAngajat/>}/>
+              </Route>
+              <Route path="/scanare" element={<PrivateRoute pozitieNecesara={[1,2]}/>}>
+                <Route path="/scanare" element = {<Scanare/>}/>
+              </Route>
+              <Route path="/validari" element={<PrivateRoute pozitieNecesara={[1,2]}/>}>
+                <Route path="/validari" element = {<Validari/>}/>
+              </Route>
+              <Route path="/confirmare-validare" element={<PrivateRoute pozitieNecesara={[1,2]}/>}>
+                <Route path="/confirmare-validare" element = {<ConfirmareValidare/>}/>
+              </Route>
+              <Route path="/validare-fara-cerere" element={<PrivateRoute pozitieNecesara={[1,2]}/>}>
+                <Route path="/validare-fara-cerere" element = {<ValidareFaraCerere/>}/>
+              </Route>
+              <Route path="/neautorizat" element = {<Neautorizat/>}/>
               <Route path="/" element = {<Acasa/>}/>
               <Route path="/conduceretpl" element = {<ConducereTPL/>}/>
               <Route path="/contact" element = {<Contact/>}/>

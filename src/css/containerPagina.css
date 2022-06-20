@@ -1,9 +1,6 @@
 .container-pagina-css
 {
-    margin-left: clamp(2.5%,10vh,10%);
-    margin-right: clamp(2.5%, 10vh, 10%);
-    margin-top: clamp(2.5%, 10vh, 10%);
-    margin-bottom: clamp(2.5%, 10vh, 10%);
+    margin: 75px;
 }
 
 .container-pagina-hr
@@ -14,7 +11,7 @@
 
 @media screen and (max-width: 780px) {
     .container-pagina-css {
-        margin-left: clamp(0%, 10vh, 0%);
-        margin-right: clamp(0%, 10vh, 0%);
+        margin-left: 0px;
+        margin-right: 0px;
     }
 }

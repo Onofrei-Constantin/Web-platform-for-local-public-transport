@@ -8,8 +8,8 @@ const Validare = ()  => {
     let navigate = useNavigate();
     const {state} = useLocation();
     const [seIncarca, setSeIncarca] = useState(true);
-    const [idBilet,setIdBilet]=useState(null);
-    const [tipBilet,setTipBilet] = useState(null);
+    const [idTranzactie,setIdTranzactie]=useState(null);
+    const [tipPersoana,setTipPersoana] = useState(null);
     const[imagineUnu,setImagineUnu] = useState(null);
     const[imagineDoi,setImagineDoi] = useState(null);
     const[imagineTrei,setImagineTrei] = useState(null);
@@ -25,9 +25,9 @@ const Validare = ()  => {
     useEffect(()=>{
         if(state!=null)
         {
-            const { idBilet,tipBilet } = state;
-            setIdBilet(idBilet);
-            setTipBilet(tipBilet);
+            const { idTranzactie,tipPersoana } = state;
+            setIdTranzactie(idTranzactie);
+            setTipPersoana(tipPersoana);
             setSeIncarca(false);
         }
     },[state]);
@@ -95,9 +95,9 @@ const Validare = ()  => {
         console.log(imagini)
 
         try {
-            await axiosJWT.post('http://localhost:3001/private/validariAdauga',{user:user.user,idBilet:idBilet,imagini:imagini},config)
+            await axiosJWT.post('http://localhost:3001/private/validariAdauga',{user:user.user,idTranzactie:idTranzactie,imagini:imagini},config)
 
-            await axiosJWT.post('http://localhost:3001/private/vanzariCerereValidare/'+idBilet)
+            await axiosJWT.post('http://localhost:3001/private/vanzariCerereValidare/'+idTranzactie)
 
             navigate('/informatii-utilizator');
         } catch (error) {
@@ -110,11 +110,11 @@ const Validare = ()  => {
   return (
     <ContainerPagina>
       <div>
-        <h1>{tipBilet==="normal" && "Pentru a valida acest abonament trebuie sa trimiteti poze cu buletinul(fata/spate)"}</h1>
-        <h1>{tipBilet==="elev" && "Pentru a valida acest abonament trebuie sa trimiteti poze cu buletinul(fata/spate), adeverinţă de elev/student pe anul şcolar în curs"}</h1>
+        <h1>{tipPersoana==="normal" && "Pentru a valida acest abonament trebuie sa trimiteti poze cu buletinul(fata/spate)"}</h1>
+        <h1>{tipPersoana==="elev" && "Pentru a valida acest abonament trebuie sa trimiteti poze cu buletinul(fata/spate), adeverinţă de elev/student pe anul şcolar în curs"}</h1>
 
         <div>
-            {tipBilet==="normal" &&
+            {tipPersoana==="normal" &&
                 <>
                 <input type="file" onChange={fileSelectedHandlerUnu}/>
                 <input type="file" onChange={fileSelectedHandlerDoi}/>
@@ -124,7 +124,7 @@ const Validare = ()  => {
                 </>
             }
 
-            {tipBilet==="elev" &&
+            {tipPersoana==="elev" &&
                 <>
                 <input type="file" onChange={fileSelectedHandlerUnu}/>
                 <input type="file" onChange={fileSelectedHandlerDoi}/>

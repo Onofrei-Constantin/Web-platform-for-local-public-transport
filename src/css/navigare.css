@@ -9,15 +9,62 @@
     background-color: white;
     color: black;
     z-index: 1;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
+
 
 .navigare-links
 {
     display: flex;
-    width: 75%;
+    width: 85%;
     justify-content: flex-start;
     list-style: none;
     margin-left: 15px;
+}
+
+.navigare-img-user {
+    position: absolute;
+    right: 57.5px;
+}
+
+.navigare-img-user:hover {
+    cursor: pointer;
+}
+
+
+
+.navigare-meniu-utilizator-content
+{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border: 2px groove #F8F8FF;
+    width: 150px;
+    top: 75px;
+    right: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.navigare-user-hr{
+    border-bottom: 0.5px solid #000000;
+    border-top: 0.5px solid #000000;
+}
+
+.navigare-meniu-utilizator-buton{
+    width: 100%;
+    background-color: white;
+    color: black;
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 15px;
+}
+
+.navigare-meniu-utilizator-buton:hover {
+    cursor: pointer;
+    color: green;
+    background-color: #F8F8FF;
 }
 
 .navigare-link-css{
@@ -25,7 +72,8 @@
     color: black;
     font-size: 20px;
     transition: all 0.5s ease;
-    margin-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -35,6 +83,8 @@
     color: black;
     font-size: 20px;
     transition: all 0.5s ease;
+    padding-left: 10px;
+    padding-right: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -42,11 +92,18 @@
 .navigare-link-css-drop:hover {
     cursor: pointer;
     color: green;
+    background-color: #F8F8FF;
 }
 
 .navigare-link-css:hover {
     cursor: pointer;
     color: green;
+    background-color: #F8F8FF;
+}
+
+.header-user-hr{
+    border-bottom: 0.5px solid #000000;
+    border-top: 0.5px solid #000000;
 }
 
 
@@ -65,15 +122,12 @@
     flex-direction: column;
     list-style: none;
     background-color: white;
-    border-style: solid;
-    border-color: grey;
-    border-radius: 5px;
+    border: 2px groove #F8F8FF;
     transition: all 0.5s ease-out;
-    width: 200px;
+    width: 175px;
     top: 70px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
-
-
 
 
 
@@ -88,6 +142,7 @@
 
     .navigare-links {
         display: none;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     }
 
     .navigare-links-mobile{
@@ -100,6 +155,7 @@
         transition: all 0.5s ease-out;
         width: 100%;
         top: 100px;
+        box-shadow: 0px 15px 10px -15px rgba(0, 0, 0, 0.2);
     }
     
     .navigare-link-css
@@ -123,7 +179,8 @@
     .navigare-buton{
         display: block;
         position: absolute;
-        font-size: 30px;
+        width: 30px;
+        height: 30px;
         outline: none;
         border: none;
         background-color: white;
@@ -134,7 +191,16 @@
     .navigare-drop {
         position: relative;
         width: 100%;
-        top: 10px;
+        top: 0px;
+    }
+
+    .navigare-img-user {
+        right: 100px;
+    }
+
+    .navigare-meniu-utilizator-content
+    {
+        right: 40px;
     }
     
 }

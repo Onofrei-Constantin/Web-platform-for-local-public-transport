@@ -54,18 +54,15 @@ const Tarife = ()  => {
         return info.map((el,index)=>{
             return(
                 <div key={index}>
-                    <img className="" src={el.tipImagine==='bilet' ? Bilet : Abonament} alt=""/>
+                    <img className="" src={el.tip==='bilet' ? Bilet : Abonament} alt=""/>
                     <div>{el.numeBilet}</div>
                     <div>{el.pret===0 ? "Gratuit" : el.pret}</div>
-                    <div>{el.valabilitate}</div>
+                    <div>{el.valabilitateInfo}</div>
                     <button onClick={()=>handleCumpara(el)}>Cumpara</button>
                 </div>
             );
         })
     }
-
-    
-  
 
   return (
       <ContainerPagina>

@@ -37,8 +37,8 @@ const Login = () => {
       );
 
       localStorage.setItem("authToken", data.accessToken);
-      localStorage.setItem("authRefreshToken", data.refreshToken)
-      setUser({user:data.email,cnp:data.cnp});
+      localStorage.setItem("authRefreshToken", data.refreshToken);
+      setUser({user:data.email,cnp:data.cnp,pozitie:data.pozitie});
 
       const configAbonament = {
           headers: {
@@ -47,7 +47,7 @@ const Login = () => {
            },
       };
 
-      await axiosJWT.get('http://localhost:3001/private/vanzariAbonament/'+data.email,configAbonament)
+      await axiosJWT.post('http://localhost:3001/private/vanzariAbonament/',{user:data.email},configAbonament)
         .then(response=>{ 
             if(response.data.length>0)
             {
@@ -97,7 +97,6 @@ const Login = () => {
             placeholder="Email address"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            tabIndex={1}
           />
         </div>
         <div >
@@ -111,7 +110,6 @@ const Login = () => {
             placeholder="Introdu parola"
             onChange={(e) => setPassword(e.target.value)}
             value={parola}
-            tabIndex={2}
           />
         </div>
         <button type="submit" >

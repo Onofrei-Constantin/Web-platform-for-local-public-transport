@@ -46,7 +46,7 @@ const InregistrareAdministare = ()  => {
         }
 
         try {
-            await axiosJWT.post("http://localhost:3001/auth/registerAdmin",{email,cnp,parola,nume,prenume,telefon,adresa},config);
+            await axiosJWT.post("http://localhost:3001/private/registerAdmin",{email,cnp,parola,nume,prenume,telefon,adresa},config);
             navigate('/administrare');
         } catch (error) {
             setError(error.response.data.error);

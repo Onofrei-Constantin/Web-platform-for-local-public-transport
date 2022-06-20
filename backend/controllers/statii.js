@@ -6,6 +6,12 @@ exports.statii =(req,res) =>{
         .catch(err=> res.status(400).json('Error: '+ err));
 };
 
+exports.statiiNume =(req,res) =>{
+    Statie.find({'dataRute.marc':true})
+        .then(rute => res.json(rute))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
+
 exports.statiiAdauga =(req,res)=>{
     const dataRute = req.body.dataRute;
 

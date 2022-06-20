@@ -1,7 +1,25 @@
 let Anunt = require('../models/anunturi.model');
 
 exports.anunturi = (req,res) =>{
-    Anunt.find({"activ":"true"})
+    Anunt.find({"activ":"true"}).sort({"createdAt":"-1"})
+        .then(anunturi => res.status(200).json(anunturi))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
+
+exports.anunturiAdmin = (req,res) =>{
+    Anunt.find().sort({"createdAt":"-1"})
+        .then(anunturi => res.status(200).json(anunturi))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
+
+exports.anunturiActiveaza= (req,res) =>{
+    Anunt.findByIdAndUpdate(req.body.id,{$set:{'activ':true}})
+        .then(anunturi => res.status(200).json(anunturi))
+        .catch(err=> res.status(400).json('Error: '+ err));
+};
+
+exports.anunturiDezactiveaza= (req,res) =>{
+    Anunt.findByIdAndUpdate(req.body.id,{$set:{'activ':false}})
         .then(anunturi => res.status(200).json(anunturi))
         .catch(err=> res.status(400).json('Error: '+ err));
 };

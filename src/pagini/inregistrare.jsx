@@ -1,5 +1,5 @@
 import ContainerPagina from "../componente/containerPagina";
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState,useContext } from "react";
 import {useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { UserContext } from "../componente/UserContext";
@@ -18,12 +18,6 @@ const Inregistrare = ()  => {
     const {setUser} = useContext(UserContext);
 
 
-    useEffect(() => {
-    if(localStorage.getItem("authToken")||localStorage.getItem("authRefreshToken"))
-        {
-            navigate('/')
-        }
-    }, [navigate,error]);
 
 
     const registerHandler= async (e)=>{
@@ -48,8 +42,8 @@ const Inregistrare = ()  => {
         try {
             const { data } = await axios.post("http://localhost:3001/auth/register",{email,cnp,parola,nume,prenume,telefon,adresa},config);
             localStorage.setItem("authToken", data.accessToken);
-            localStorage.setItem("authRefreshToken", data.refreshToken)
-            setUser({user:data.email,cnp:data.cnp});
+            localStorage.setItem("authRefreshToken", data.refreshToken);
+            setUser({user:data.email,cnp:data.cnp,pozitie:data.pozitie});
             navigate('/');
         } catch (error) {
             setError(error.response.data.error);

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const validariSchema = new Schema({
     user : {type:String,required:true},
-    idBilet : {type:String,required:true},
+    idTranzactie : {type:String,required:true},
     imagini :{type: Array, required:true},
     anulat :{type:Boolean,default:false},
     validat :{type:Boolean,default:false},

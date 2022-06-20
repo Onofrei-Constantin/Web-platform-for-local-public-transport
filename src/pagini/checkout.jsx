@@ -6,25 +6,24 @@ import { UserContext } from "../componente/UserContext";
 import { AbonamentContext } from "../componente/AbonamentContext";
 import { useStripe } from "@stripe/react-stripe-js";
 import { axiosJWT } from "../componente/axiosJWT";
-import QRCode from 'qrcode';
-
 
 const Checkout = ()  => {
     let navigate = useNavigate();
     const {produs} = useContext(ProdusContext);
     const {user} = useContext(UserContext);
-    const {abonament} = useContext(AbonamentContext);
+    const {abonament,setAbonament} = useContext(AbonamentContext);
 
-    const [idReinoire,setIdReinoire] = useState(null);
     const [pret,setPret] = useState(null);
     const [numeBilet,setNumeBilet] = useState(null);
     const [valabilitateInfo,setValabilitateInfo] = useState(null);
-    const [tipImagine,setTipImagine] = useState(null);
+    const [tip,setTip] = useState(null);
     const [valabilitateTip,setValabilitateTip] = useState(null);
     const [activ,setActiv] = useState(null);
     const [nominal,setNominal] = useState(null);
     const [perioada,setPerioada] = useState(null);
-    const [tipBilet,setTipBilet]= useState(null);
+    const [tipPersoana,setTipPersoana]= useState(null);
+    const [idBilet,setIdBilet] = useState(null);
+    const [seIncarca, setSeIncarca] = useState(true);
     const stripe = useStripe();
 
     const urlBilet = "https://toppng.com/uploads/preview/tiket-11550724558kfzqgsywhm.png" ;
@@ -37,29 +36,63 @@ const Checkout = ()  => {
         }
     }, [navigate]);
 
-    
+
+    useEffect(()=>{
+        const getAbonamentUser = async ()=>{
+        
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        };
+
+        await axiosJWT.post('http://localhost:3001/private/vanzariAbonament',{user:user.user},config)
+            .then(response=>{ 
+                if(response.data.length>0)
+                {
+                  setAbonament(response.data);
+                }
+                else
+                {
+                  setAbonament(null);
+                }
+                setSeIncarca(false);
+            })
+            .catch(function (error) {
+            if (error.response) {
+                // Request made and server responded
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+                } else if (error.request) {
+                // The request was made but no response was received
+                console.log(error.request);
+                } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+                }
+            }); 
+          }
+
+        getAbonamentUser();
+
+    },[user,setAbonament]);
 
     useEffect(()=>{
         if(produs!=null)
         {
-            const {pret,numeBilet,valabilitateInfo,tipImagine,valabilitateTip,tip,activ,perioada,_id,reinoire,tipBilet} = produs;
-            setPret(pret);
+            const {_id,pret,numeBilet,valabilitateInfo,tip,valabilitateTip,nominal,activ,perioada,tipPersoana} = produs;
             setNumeBilet(numeBilet);
             setValabilitateInfo(valabilitateInfo);
-            setTipImagine(tipImagine);
+            setTip(tip);
             setValabilitateTip(valabilitateTip);
             setActiv(activ);
-            setNominal(tip);
+            setNominal(nominal);
             setPerioada(perioada);
-            setTipBilet(tipBilet);
-            if(reinoire===true)
-            {
-                setIdReinoire(_id);
-            }
-            else
-            {
-                setIdReinoire(null);
-            }
+            setTipPersoana(tipPersoana);
+            setPret(pret);
+            setIdBilet(_id);
         }
     },[produs]);
 
@@ -73,7 +106,7 @@ const Checkout = ()  => {
                 product_data: {
                     name : numeBilet,
                     description : valabilitateInfo,
-                    images: [tipImagine==='bilet' ? urlBilet : urlAbonament],
+                    images: [tip==='bilet' ? urlBilet : urlAbonament],
                 }
             },
         }];
@@ -112,24 +145,17 @@ const Checkout = ()  => {
 
 
         let metadata;
-
-        if(idReinoire!==null)
+        let cnp;
+        if(nominal==="nominal")
         {
-            metadata = {'dataStart':dataStartISO,'dataStop':dataStopISO,'idReinoire':idReinoire}
+            cnp = user.cnp;
         }
         else
         {
-            let cnp;
-            if(nominal==="nominal")
-            {
-                cnp = user.cnp;
-            }
-            else
-            {
-                cnp = null;
-            }
-            metadata = {'activ':activ,'tip':nominal,'dataStart':dataStartISO,'dataStop':dataStopISO,'tipImagine':tipImagine,'valabilitateTip':valabilitateTip,'perioada':perioada,'tipBilet':tipBilet,'cnp':cnp}
+            cnp = null;
         }
+        metadata = {'activ':activ,'nominal':nominal,'dataStart':dataStartISO,'dataStop':dataStopISO,'tip':tip,'valabilitateTip':valabilitateTip,'perioada':perioada,'tipPersoana':tipPersoana,'cnp':cnp,'idBilet':idBilet}
+        
 
         const fetchFromCheckout = async () => {
             const config = {
@@ -190,31 +216,22 @@ const Checkout = ()  => {
             dataStopISO = null;
         }
 
-        if(idReinoire!==null)
-        {
-            try {
-                await axiosJWT.post("http://localhost:3001/private/vanzariReinoire/"+idReinoire,{
-                dataStart: dataStartISO,
-                dataStop: dataStopISO,
-                })
-                navigate('/success');
-            } catch (error) {
-                console.log("Eroare: "+error);
-            } 
-        }
-        else{
+        
+        
             let qr;
             let cnp;
             if(nominal==="nominal")
             {
                 cnp = user.cnp;
-                qr = await QRCode.toDataURL(cnp+""+Date.now() +""+ Math.floor(100000 + Math.random() * 900000));
+                qr = cnp+""+Date.now() +""+ Math.floor(10000000000000 + Math.random() * 90000000000000);
             }
             else
             {
                 cnp = null;
-                qr = await QRCode.toDataURL(Math.floor(1000000000000 + Math.random() * 9000000000000)+""+Date.now() +""+ Math.floor(100000 + Math.random() * 900000));
+                qr = Math.floor(1000000000000 + Math.random() * 9000000000000)+""+Date.now() +""+ Math.floor(10000000000000 + Math.random() * 90000000000000);
             }
+
+            console.log(qr)
 
             try {
                 await axiosJWT.post("http://localhost:3001/private/vanzariAdauga",{
@@ -222,24 +239,35 @@ const Checkout = ()  => {
                 pret: pret,
                 dataStart: dataStartISO,
                 dataStop: dataStopISO,
-                codQR : qr,
                 user: user.user,
-                tip: nominal,
+                nominal: nominal,
                 activ: activ,
-                tipImagine: tipImagine,
+                tip: tip,
                 valabilitateTip: valabilitateTip,
                 perioada: perioada,
-                tipBilet: tipBilet,
+                tipPersoana: tipPersoana,
                 cnp: cnp,
+                idBilet:idBilet,
+                pretReinoire: pret,
+                codQrDecodat:qr,
                 })
                 navigate('/success');
             } catch (error) {
                 console.log("Eroare: "+error);
             } 
-        }
+        
     }
 
-
+    if(seIncarca)
+    {
+        return (
+        <ContainerPagina>
+            <div >
+                <h1>Se incarca datele...</h1>
+            </div>
+        </ContainerPagina>
+        );
+    }
    
 
     return (

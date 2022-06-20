@@ -1,7 +1,5 @@
 const stripeAPI = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const axios = require('axios');
-const QRCode = require('qrcode');
-
 
 exports.webhook =  async function(req,res) {
     const sig = req.headers['stripe-signature'];
@@ -22,48 +20,33 @@ exports.webhook =  async function(req,res) {
             session.id
         );
 
-
-        if(session.metadata.idReinoire!=null)
-        {
-             try {
-                await axios.post("http://localhost:3001/private/vanzariReinoire/"+session.metadata.idReinoire,{
-                idTranzactie:session.id,
-                dataStart: session.metadata.dataStart,
-                dataStop: session.metadata.dataStop,
-                idPayment : session.payment_intent,
-                })
-                navigate('/success');
-            } catch (error) {
-                console.log("Eroare: "+error);
-            } 
-        }
-        else
-        {
             let qr;
             if(session.metadata.tip==="nominal")
             {
-                qr = await QRCode.toDataURL(session.metadata.cnp+""+Date.now() +""+ Math.floor(100000 + Math.random() * 900000));
+                qr =session.metadata.cnp+""+Date.now() +""+ Math.floor(10000000000000 + Math.random() * 90000000000000);
             }
             else
             {
-                qr = await QRCode.toDataURL(Math.floor(1000000000000 + Math.random() * 9000000000000)+""+Date.now() +""+ Math.floor(100000 + Math.random() * 900000));
+                qr = Math.floor(1000000000000 + Math.random() * 9000000000000)+""+Date.now() +""+ Math.floor(10000000000000 + Math.random() * 90000000000000);
             }
 
-            await axios.post("http://localhost:3001/private/vanzariAdauga",{idTranzactie:session.id,
+            await axios.post("http://localhost:3001/private/vanzariAdauga",{idSesiune:session.id,
             numeBilet: sessionRetriveData.data[0].description,
             pret: session.amount_total/100,
             dataStart: session.metadata.dataStart,
             dataStop: session.metadata.dataStop,
-            codQR : qr,
             user: session.customer_email,
-            tip: session.metadata.tip,
+            nominal: session.metadata.nominal,
             activ: session.metadata.activ,
-            tipImagine : session.metadata.tipImagine,
+            tip : session.metadata.tip,
             valabilitateTip : session.metadata.valabilitateTip,
             perioada : session.metadata.perioada,
             idPayment : session.payment_intent,
-            tipBilet: session.metadata.tipBilet,
+            tipPersoana: session.metadata.tipPersoana,
             cnp: session.metadata.cnp,
+            idBilet:session.metadata.idBilet,
+            pretReinoire:session.amount_total/100,
+            codQrDecodat:qr,
             })
             .catch(function (error) {
             if (error.response) {
@@ -79,6 +62,6 @@ exports.webhook =  async function(req,res) {
                 console.log('Error', error.message);
                 }
             }); 
-        } 
+        
     }
 }
